@@ -1,16 +1,15 @@
-import NextAuth from "next-auth"
-import GoogleProvider, { GoogleProfile } from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
+import NextAuth, { NextAuthOptions } from "next-auth"
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google"
 
 const prisma = new PrismaClient()
 
-export default NextAuth({
-  adapter: PrismaAdapter(prisma),
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       authorization: {
         params: {
           prompt: "consent",
@@ -28,12 +27,10 @@ export default NextAuth({
         }
       },
       allowDangerousEmailAccountLinking: true,
-
-
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-
+  adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET as string,
   callbacks: {
     async signIn({ account }) {
       
@@ -50,5 +47,8 @@ export default NextAuth({
       }
     }
   }
-})
+}
 
+const handler = NextAuth(authOptions)
+
+export { handler as GET, handler as POST }

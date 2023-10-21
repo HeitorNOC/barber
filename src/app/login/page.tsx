@@ -1,3 +1,5 @@
+"use client"
+
 import Image from 'next/image';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
@@ -6,8 +8,30 @@ import { Label } from '../../components/ui/label';
 import { Separator } from '../../components/ui/separator';
 import { LogIn } from 'lucide-react';
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import {  useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+    const session = useSession()
+    const router = useRouter()
+    console.log(session)
+    
+    useEffect(() => {
+        if (session.status == 'authenticated') {
+            router.push('/')
+            window.alert('Você já está logado!')
+        }
+    }, [session.status, router])
+    
+    async function handleConnectGoogle() {
+        if (session.status != 'unauthenticated') {
+          await signOut()
+    
+        }
+        await signIn('google', { callbackUrl: '/' })
+    
+      }
     return (
         <div className="min-h-screen flex justify-center items-center">
             <Card className='w-[350px]'>
@@ -32,7 +56,7 @@ export default function Login() {
                             </Button>
                         </div>
                         <div>
-                            <Button className='gap-4 w-full' variant={'secondary'}>
+                            <Button className='gap-4 w-full' variant={'secondary'} onClick={handleConnectGoogle}>
                                 <Image src='/google.png' alt='google' width={25} height={25} />
                                 <p>Entrar com Google</p>
                             </Button>
