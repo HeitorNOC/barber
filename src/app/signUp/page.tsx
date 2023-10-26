@@ -48,9 +48,9 @@ export default function SignUp() {
     const [progress, setProgress] = useState(50)
     const [address, setAddress] = useState<addressType>()
     const [error, setError] = useState<String>()
-    const [estado, setEstado] = useState<String | undefined>(undefined)
-    const [cidade, setCidade] = useState<String | undefined>(undefined)
-    const [bairro, setBairro] = useState<String | undefined>(undefined)
+    const [estado, setEstado] = useState<String | undefined>()
+    const [cidade, setCidade] = useState<String | undefined>()
+    const [bairro, setBairro] = useState<String | undefined>()
     const [cidades, setCidades] = useState<Array<String>>()
     const [bairros, setBairros] = useState<Array<String>>()
 
@@ -70,18 +70,18 @@ export default function SignUp() {
         if (e) {
             setEstado(e)
 
-            const cidadesKeys = states.find((item) => item.estado == e)
+            const cidadesKeys: any = states.find((item) => item.estado == e)
             if (cidadesKeys) {
                 setCidades(Object.keys(cidadesKeys.cidades[0]))
             }
         }
     }
 
-    function handleSetCidade(e: any) {
+    function handleSetCidade(e: any, uf?: string) {
         if (e) {
             setCidade(e)
-            
-            const cidadesAux = states.find((item) => item.estado == estado)
+        
+            const cidadesAux = states.find((item) => item.estado == uf ?? estado)
             if (cidadesAux) {
                 const bairrosKeys: any = cidadesAux.cidades[0]
                 setBairros(bairrosKeys[e])
@@ -89,19 +89,25 @@ export default function SignUp() {
         }
     }
 
-    function handleCheckCep(e: any) {
+    function handleSetBairro(e: any) {
+        if (e) {
+            setBairro(e)
+        }
+    }
+
+    async function handleCheckCep(e: any) {
         if (e.target.value != "" && e.target.value.length == 9) {
             const cep = e.target.value.replace(/\D/g, '')
-            fetch(`https://viacep.com.br/ws/${cep}/json`)
+            await fetch(`https://viacep.com.br/ws/${cep}/json`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.erro) {
                         setError('CEP inválido.')
                     } else {
-                        setAddress(data)
                         handleSetEstado(data.uf)
-                        handleSetCidade(data.localidade)
-                        setBairro(data.bairro)
+                        handleSetCidade(data.localidade, data.uf)
+                        handleSetBairro(data.bairro)
+                        setAddress(data)
                     }
                 })
         }
@@ -113,7 +119,15 @@ export default function SignUp() {
             name: "",
             email: "",
             senha: "",
-            celular: ""
+            celular: "",
+            endereço: {
+                bairro: "",
+                cep: "",
+                cidade: "",
+                complemento: "",
+                rua: "",
+                uf: ""
+            }
         },
     })
 
@@ -298,7 +312,7 @@ export default function SignUp() {
                                                 <Select
                                                     disabled={!cidade}
                                                     onValueChange={(e) => {
-                                                        handleSetCidade(e)
+                                                        handleSetBairro(e)
                                                         field.onChange(e)
                                                     }
                                                     }
@@ -319,7 +333,7 @@ export default function SignUp() {
                                                             ) : (
                                                                 <>
                                                                     <p>Não foi possível encontrar os bairros da sua cidade, digite-o por favor.</p>
-                                                                    <Input disabled={!cidade} placeholder="Digite seu bairro" {...field}  />
+                                                                    <Input disabled={!cidade} placeholder="Digite seu bairro" {...field}  onChange={handleSetBairro}/>
                                                                 </>
                                                             )
                                                         }
@@ -332,14 +346,14 @@ export default function SignUp() {
                                             </FormItem>
                                         )}
                                     />
-                                    {/* <FormField
+                                     <FormField
                                         control={form.control}
-                                        name="endereço.cep"
+                                        name="endereço.rua"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>CEP</FormLabel>
+                                                <FormLabel>Rua</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="cep" {...field} isMask mask="99999-999" />
+                                                     
                                                 </FormControl>
                                                 <FormDescription>
                                                     This is your public display name.
@@ -348,6 +362,7 @@ export default function SignUp() {
                                             </FormItem>
                                         )}
                                     />
+                                    {/*
                                     <FormField
                                         control={form.control}
                                         name="endereço.cep"
