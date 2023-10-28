@@ -51,6 +51,7 @@ export default function SignUp() {
     const [estado, setEstado] = useState<String | undefined>()
     const [cidade, setCidade] = useState<String | undefined>()
     const [bairro, setBairro] = useState<String | undefined>()
+    const [rua, setRua] = useState<String>("")
     const [cidades, setCidades] = useState<Array<String>>()
     const [bairros, setBairros] = useState<Array<String>>()
 
@@ -107,6 +108,7 @@ export default function SignUp() {
                         handleSetEstado(data.uf)
                         handleSetCidade(data.localidade, data.uf)
                         handleSetBairro(data.bairro)
+                        setRua(data.logradouro)
                         setAddress(data)
                     }
                 })
@@ -353,7 +355,7 @@ export default function SignUp() {
                                             <FormItem>
                                                 <FormLabel>Rua</FormLabel>
                                                 <FormControl>
-                                                     
+                                                <Input placeholder="Rua" {...field} value={String(rua)} onChange={(e) => setRua(e.target.value)}/> 
                                                 </FormControl>
                                                 <FormDescription>
                                                     This is your public display name.
