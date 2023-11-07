@@ -24,6 +24,8 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import states from "@/app/assets/data.json";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 type addressType = {
   bairro: string;
@@ -85,8 +87,29 @@ export default function SignUp() {
   const [rua, setRua] = useState<String>("");
   const [complemento, setComplemento] = useState<String>("");
   const [numero, setNumero] = useState<String>("");
-  const [cidades, setCidades] = useState<Array<String>>();
+  const [estados, setEstados] = useState<any>();
+  const [cidades, setCidades] = useState<any>();
   const [bairros, setBairros] = useState<Array<String>>();
+
+  const listStates = async () => {
+    const response = await axios.get("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
+    setEstados(response.data)
+    return response.data
+  }
+
+  const listCidades = async (ufID: number) => {
+    const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufID}/municipios`)
+
+    setCidades(response.data)
+  }
+
+  const {
+    data,
+    isLoading,
+    isError
+  } = useQuery({ queryKey: ["states"], queryFn: listStates })
+
+
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     //console.log(values)
@@ -102,12 +125,9 @@ export default function SignUp() {
 
   function handleSetEstado(e: any) {
     if (e) {
-      setEstado(e);
-
-      const cidadesKeys: any = states.find((item) => item.estado == e);
-      if (cidadesKeys) {
-        setCidades(Object.keys(cidadesKeys.cidades[0]));
-      }
+      const actualState = estados.find((state: any) => state.sigla == e)
+      setEstado(e)
+      listCidades(actualState.id)
     }
   }
 
@@ -291,6 +311,7 @@ export default function SignUp() {
                         }}
                         defaultValue={field.value}
                         value={String(estado)}
+                        disabled={!data}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -298,13 +319,13 @@ export default function SignUp() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {states.map((state) => (
+                          {data.map((state:any) => (
                             <SelectItem
                               {...field}
-                              key={state.estado}
-                              value={state.estado}
+                              key={state.id}
+                              value={state.sigla}
                             >
-                              {state.estado}
+                              {state.sigla}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -316,7 +337,6 @@ export default function SignUp() {
                     </FormItem>
                   )}
                 />
-                {/* TODO:  Mover condicional de cidades para cima do componente Select*/}
                 <FormField
                   control={form.control}
                   name="endereço.cidade"
@@ -326,8 +346,8 @@ export default function SignUp() {
                       <Select
                         disabled={!estado}
                         onValueChange={(e) => {
-                          handleSetCidade(e);
-                          field.onChange(e);
+                          handleSetCidade(e)
+                          field.onChange(e)
                         }}
                         defaultValue={field.value}
                         value={String(cidade)}
@@ -339,13 +359,13 @@ export default function SignUp() {
                         </FormControl>
                         <SelectContent>
                           {cidades ? (
-                            cidades.map((cidadeAtual) => (
+                            cidades.map((cidadeAtual:any) => (
                               <SelectItem
                                 {...field}
-                                key={String(cidadeAtual)}
-                                value={String(cidadeAtual)}
+                                key={cidadeAtual.id}
+                                value={cidadeAtual.nome}
                               >
-                                {cidadeAtual}
+                                {cidadeAtual.nome}
                               </SelectItem>
                             ))
                           ) : (
@@ -377,47 +397,15 @@ export default function SignUp() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Bairro</FormLabel>
-                      <Select
-                        disabled={!cidade}
-                        onValueChange={(e) => {
-                          handleSetBairro(e);
-                          field.onChange(e);
-                        }}
-                        defaultValue={field.value}
-                        value={String(bairro)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o bairro do seu endereço." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {bairros ? (
-                            bairros.map((bairroAtual) => (
-                              <SelectItem
-                                {...field}
-                                key={String(bairroAtual)}
-                                value={String(bairroAtual)}
-                              >
-                                {bairroAtual}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            <>
-                              <p>
-                                Não foi possível encontrar os bairros da sua
-                                cidade, digite-o por favor.
-                              </p>
-                              <Input
-                                disabled={!cidade}
-                                placeholder="Digite seu bairro"
-                                {...field}
-                                onChange={handleSetBairro}
-                              />
-                            </>
-                          )}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Input
+                          disabled={!cidade}
+                          placeholder="Digite seu bairro"
+                          {...field}
+                          onChange={handleSetBairro}
+                          value={String(bairro)}
+                        />
+                      </FormControl>
                       <FormDescription>
                         This is your public display name.
                       </FormDescription>
