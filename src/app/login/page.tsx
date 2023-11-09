@@ -9,10 +9,12 @@ import { Separator } from '../../components/ui/separator';
 import { LogIn } from 'lucide-react';
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import {  useEffect } from "react";
+import {  useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const session = useSession()
     const router = useRouter()
     console.log(session)
@@ -32,6 +34,15 @@ export default function Login() {
         await signIn('google', { callbackUrl: '/' })
     
       }
+
+      async function handleLogin() {
+        if (session.status != 'unauthenticated') {
+            await signOut()
+          }
+          const res = await signIn('credentials', { redirect: false, email: email, password: password })
+          console.log(res)
+      }
+
     return (
         <div className="min-h-screen flex justify-center items-center">
             <Card className='w-[350px]'>
@@ -44,13 +55,13 @@ export default function Login() {
                         <div className="grid gap-6">
                             <div className="grid w-full max-w-sm items-center gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input type="email" id="email" placeholder="Email" />
+                                <Input type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                             </div>
                             <div className="grid w-full max-w-sm items-center gap-2">
                                 <Label htmlFor="senha">Senha</Label>
-                                <Input type="password" id="senha" placeholder="Senha" />
+                                <Input type="password" id="senha" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)}/>
                             </div>
-                            <Button className="flex items-center gap-2 mb-6" variant={'secondary'}>
+                            <Button className="flex items-center gap-2 mb-6" variant={'secondary'} onClick={handleLogin}>
                                 <p>Entrar</p>
                                 <LogIn className="h-4 w-4" />
                             </Button>

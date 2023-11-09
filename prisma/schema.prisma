@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  name          String
-  avatar_url    String?
-  created_at    DateTime   @default(now())
-  email         String     @unique
-  emailVerified DateTime?
-  accounts      Account[]
-  sessions      Session[]
-  schedules     Schedule[]
-  purchases     Purchase[]
+  id             String     @id @default(uuid())
+  name           String
+  avatar_url     String?
+  created_at     DateTime   @default(now())
+  email          String     @unique
+  hashedPassword String?
+  emailVerified  DateTime?
+  uf             String?
+  accounts       Account[]
+  sessions       Session[]
+  schedules      Schedule[]
+  purchases      Purchase[]
 
   @@map("users")
 }

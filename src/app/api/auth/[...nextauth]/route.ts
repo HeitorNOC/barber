@@ -24,7 +24,8 @@ export const authOptions: NextAuthOptions = {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
-          avatar_url: profile.picture
+          avatar_url: profile.picture,
+          emailVerified: profile.email_verified
         }
       },
       allowDangerousEmailAccountLinking: true,
@@ -33,7 +34,7 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "email@email.com" },
-        password: { label: "Senha", type: "password" }
+        hashedPassword: { label: "Senha", type: "password" }
       },
       async authorize(credentials, req) {
         const res = await fetch("http://localhost:3000/api/login", {
@@ -42,8 +43,8 @@ export const authOptions: NextAuthOptions = {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            username: credentials?.email,
-            password: credentials?.password,
+            email: credentials?.email,
+            hashedPassword: credentials?.hashedPassword,
           }),
         })
 
@@ -77,7 +78,9 @@ export const authOptions: NextAuthOptions = {
 
     
     async session({ session, user, token }) {
-      session.user = token as any
+      if (token) {
+        session.user = token as any
+      }
       return {
         ...session,
         user
