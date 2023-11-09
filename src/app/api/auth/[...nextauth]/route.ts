@@ -2,6 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
 
 const prisma = new PrismaClient()
 
@@ -28,6 +29,34 @@ export const authOptions: NextAuthOptions = {
       },
       allowDangerousEmailAccountLinking: true,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "email@email.com" },
+        password: { label: "Senha", type: "password" }
+      },
+      async authorize(credentials, req) {
+        const res = await fetch("http://localhost:3000/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: credentials?.email,
+            password: credentials?.password,
+          }),
+        })
+
+        if (res.status === 401) return null
+        const user = await res.json()
+
+        if (user) {
+          return user
+        } else {
+          return null
+        }
+      },
+    })
   ],
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET as string,
@@ -39,8 +68,16 @@ export const authOptions: NextAuthOptions = {
       
     },
 
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        return { ...token, ...session.user }
+      }
+      return { ...token, ...user }
+    },
+
     
-    async session({ session, user }) {
+    async session({ session, user, token }) {
+      session.user = token as any
       return {
         ...session,
         user
