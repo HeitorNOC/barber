@@ -6,10 +6,10 @@ interface RequestBody {
     email: string
     password: string
     phone: string
-  }
+}
 
 export async function POST(request: Request) {
-    const { email, name, password, phone }: RequestBody =  await request.json()
+    const { email, name, password, phone }: RequestBody = await request.json()
 
     const user = await prisma.user.findFirst({
         where: {
@@ -20,8 +20,8 @@ export async function POST(request: Request) {
     if (user) {
         return new Response(JSON.stringify({
             message: "Email já cadastrado."
-        })),
-        { status: 500 } 
+        }),
+            { status: 500 })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -35,10 +35,17 @@ export async function POST(request: Request) {
         }
     })
 
+    console.log(userCreated)
+
     if (userCreated) {
         return new Response(JSON.stringify({
             message: "Usuário cadastrado com sucesso."
-        })),
-        { status: 201 }
+        }),
+            { status: 201 })
+    } else {
+        return new Response(JSON.stringify({
+            message: "Erro no servidor, tente novamente mais tarde."
+        }),
+            { status: 500 })
     }
 }

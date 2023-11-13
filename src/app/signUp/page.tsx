@@ -16,6 +16,7 @@ import { Input } from "../../components/ui/input"
 import { Button } from "../../components/ui/button"
 import { Progress } from "../../components/ui/progress"
 
+
 const formSchema = z.object({
   name: z
     .string()
@@ -36,8 +37,19 @@ const formSchema = z.object({
 
 export default function SignUp() {
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    //const hashedPassword = await bcrypt.hash(values.password, 10)
+    const res = await fetch("http://localhost:3000/api/user", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values
+      })
+    })
+
+    console.log(res)
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
