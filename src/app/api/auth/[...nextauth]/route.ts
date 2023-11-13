@@ -34,17 +34,17 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "email@email.com" },
-        hashedPassword: { label: "Senha", type: "password" }
+        password: { label: "Senha", type: "password" }
       },
       async authorize(credentials, req) {
         const res = await fetch("http://localhost:3000/api/login", {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
             email: credentials?.email,
-            hashedPassword: credentials?.hashedPassword,
+            password: credentials?.password,
           }),
         })
 
@@ -61,12 +61,17 @@ export const authOptions: NextAuthOptions = {
   ],
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET as string,
+  session: {
+    strategy: 'jwt'
+  },
   callbacks: {
-    async signIn({ account }) {
-      
-        
-        return true // Do different verification for other providers that don't have `email_verified`
-      
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        return true
+      } else {
+        // logica para se logar com as credenciais
+        return true
+      }
     },
 
     async jwt({ token, user, trigger, session }) {
@@ -88,6 +93,7 @@ export const authOptions: NextAuthOptions = {
     }
   }
 }
+
 
 const handler = NextAuth(authOptions)
 

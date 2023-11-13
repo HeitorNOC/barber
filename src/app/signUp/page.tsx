@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 import {
   Form,
   FormControl,
@@ -11,10 +11,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
-import { Progress } from "../../components/ui/progress";
+} from "../../components/ui/form"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
+import { Progress } from "../../components/ui/progress"
 
 const formSchema = z.object({
   name: z
@@ -22,17 +22,17 @@ const formSchema = z.object({
     .min(2, { message: "O campo deve conter no mínimo 2 caracteres." })
     .max(50, { message: "O campo deve conter no máximo 50 caracteres." }),
   email: z.string().email({ message: "Email inválido" }),
-  senha: z
+  password: z
     .string()
     .min(4, { message: "O campo deve conter no mínimo 4 caracteres." })
     .max(20, { message: "O campo deve conter no máximo 20 caracteres." }),
-  celular: z
+  phone: z
     .string()
     .refine((celular) => /^\(\d{2}\)\d\d{4}-\d{4}$/.test(celular), {
       message: "Número de celular inválido. O formato deve ser (99)99999-9999",
     }),
   
-});
+})
 
 export default function SignUp() {
 
@@ -45,10 +45,10 @@ export default function SignUp() {
     defaultValues: {
       name: "",
       email: "",
-      senha: "",
-      celular: "",
+      password: "",
+      phone: "",
     },
-  });
+  })
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6">
@@ -81,8 +81,8 @@ export default function SignUp() {
                 />
                 <FormField
                   control={form.control}
-                  name="celular"
-                  key="celular"
+                  name="phone"
+                  key="phone"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Número de celular</FormLabel>
@@ -121,8 +121,8 @@ export default function SignUp() {
                 />
                 <FormField
                   control={form.control}
-                  name="senha"
-                  key="senha"
+                  name="password"
+                  key="password"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Senha</FormLabel>
@@ -144,5 +144,5 @@ export default function SignUp() {
         </Form>
       </div>
     </div>
-  );
+  )
 }

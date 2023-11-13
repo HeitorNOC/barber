@@ -1,16 +1,16 @@
 "use client"
 
-import Image from 'next/image';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Separator } from '../../components/ui/separator';
-import { LogIn } from 'lucide-react';
-import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
-import {  useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from 'next/image'
+import { Button } from '../../components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card'
+import { Input } from '../../components/ui/input'
+import { Label } from '../../components/ui/label'
+import { Separator } from '../../components/ui/separator'
+import { LogIn } from 'lucide-react'
+import Link from "next/link"
+import { signIn, signOut, useSession } from "next-auth/react"
+import {  useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Login() {
     const [email, setEmail] = useState("")
@@ -39,7 +39,15 @@ export default function Login() {
         if (session.status != 'unauthenticated') {
             await signOut()
           }
-          const res = await signIn('credentials', { redirect: false, email: email, password: password })
+          const res = await signIn('credentials', { redirect: false, callbackUrl: '/', email: email, password: password, })
+          /* if (res?.ok) {
+            session.update({
+                ...session,
+                user: {
+                    ...session.data?.user
+                }
+            })
+          } */
           console.log(res)
       }
 

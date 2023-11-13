@@ -18,7 +18,10 @@ model User {
   email          String     @unique
   hashedPassword String?
   emailVerified  DateTime?
+  token          String?
   uf             String?
+  phone          String?
+  cpf            String?
   accounts       Account[]
   sessions       Session[]
   schedules      Schedule[]
