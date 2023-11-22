@@ -6,7 +6,7 @@ interface RequestBody {
   email: string
   password: string
 }
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   const body: RequestBody = await request.json()
 
   const user = await prisma.user.findFirst({
@@ -15,10 +15,8 @@ export async function GET(request: Request) {
     },
   })
 
-  if(user?.hashedPassword) {
-    const newHashedPassword = await bcrypt.hash(user.hashedPassword, 10)
-    
-    if (user && user.hashedPassword && (await bcrypt.compare(body.password, newHashedPassword))) {
+  if(user?.hashedPassword) {    
+    if (user && user.hashedPassword && (await bcrypt.compare(body.password, user.hashedPassword))) {
       const { hashedPassword, ...userWithoutPass } = user
       const accessToken = signJwtAccessToken(userWithoutPass)
       const result = {
