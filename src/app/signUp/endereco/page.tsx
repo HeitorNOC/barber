@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import Loader from "@/components/ui/loader"
 import { Progress } from "@/components/ui/progress"
@@ -46,6 +46,95 @@ export default function Endereco() {
     const [cidade, setCidade] = useState<String | undefined>()
     const [estados, setEstados] = useState<any>()
     const [cidades, setCidades] = useState<any>()
+    const [cepChanged, setCepChanged] = useState(false);
+    const [ufChanged, setUfChanged] = useState(false);
+    const [cidadeChanged, setCidadeChanged] = useState(false);
+    const [bairroChanged, setBairroChanged] = useState(false);
+    const [ruaChanged, setRuaChanged] = useState(false);
+    const [complementoChanged, setComplementoChanged] = useState(false);
+    const [numeroChanged, setNumeroChanged] = useState(false);
+
+    function handleAddProgress(amount: number) {
+        if (progress < 100) {
+          setProgress((prev) => Math.min(prev + amount, 100));
+        }
+      }
+    
+      function handleDecreaseProgress(amount: number) {
+        if (progress > 0) {
+          setProgress((prev) => Math.max(prev - amount, 0));
+        }
+      }
+    
+      function handleSetFieldChange(field: string, value: string) {
+        switch (field) {
+          case "cep":
+            if (!cepChanged && value.trim() !== '') {
+              setCepChanged(true);
+              handleAddProgress(10);
+            } else if (cepChanged && value.trim() === '') {
+              setCepChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "uf":
+            if (!ufChanged && value.trim() !== '') {
+              setUfChanged(true);
+              handleAddProgress(10);
+            } else if (ufChanged && value.trim() === '') {
+              setUfChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "cidade":
+            if (!cidadeChanged && value.trim() !== '') {
+              setCidadeChanged(true);
+              handleAddProgress(10);
+            } else if (cidadeChanged && value.trim() === '') {
+              setCidadeChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "bairro":
+            if (!bairroChanged && value.trim() !== '') {
+              setBairroChanged(true);
+              handleAddProgress(10);
+            } else if (bairroChanged && value.trim() === '') {
+              setBairroChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "rua":
+            if (!ruaChanged && value.trim() !== '') {
+              setRuaChanged(true);
+              handleAddProgress(10);
+            } else if (ruaChanged && value.trim() === '') {
+              setRuaChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "complemento":
+            if (!complementoChanged && value.trim() !== '') {
+              setComplementoChanged(true);
+              handleAddProgress(10);
+            } else if (complementoChanged && value.trim() === '') {
+              setComplementoChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          case "numero":
+            if (!numeroChanged && value.trim() !== '') {
+              setNumeroChanged(true);
+              handleAddProgress(10);
+            } else if (numeroChanged && value.trim() === '') {
+              setNumeroChanged(false);
+              handleDecreaseProgress(10);
+            }
+            break;
+          default:
+            break;
+        }
+      }
 
     const listStates = async () => {
         const response = await axios.get("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
@@ -74,58 +163,58 @@ export default function Endereco() {
             const actualState = estados.find((state: any) => state.sigla == e)
             listCidades(actualState.id)
             if (!estado) {
-                handleAddProgress()
+              //  handleAddProgress()
             }
             setEstado(e)
         } else {
-            handleDecreaseProgress()
+         //   handleDecreaseProgress()
         }
     }
 
     function handleSetCidade(e: any) {
         if (e) {
             if (!cidade) {
-                handleAddProgress()
+             //   handleAddProgress()
             }
             setCidade(e)
         } else {
-            handleDecreaseProgress()
+          //  handleDecreaseProgress()
         }
     }
 
     function handleSetBairro(e: any) {
         if (e.target.value == "") {
-            handleDecreaseProgress()
+          //  handleDecreaseProgress()
         } else {
-            handleAddProgress()
+            //handleAddProgress()
         }
     }
 
     function handleSetRua(e: any) {
         if (e.target.value == "") {
-            handleDecreaseProgress()
+         //   handleDecreaseProgress()
         } else {
-            handleAddProgress()
+         //   handleAddProgress()
         }
     }
 
     function handleSetComplemento(e: any) {
         if (e.target.value == "") {
-            handleDecreaseProgress()
+           // handleDecreaseProgress()
         } else {
-            handleAddProgress()
+          //  handleAddProgress()
         }
     }
 
     function handleSetNumero(e: any) {
         if (e.target.value == "") {
-            handleDecreaseProgress()
+           // handleDecreaseProgress()
         } else {
-            handleAddProgress()
+           // handleAddProgress()
         }
     }
 
-    function handleAddProgress(e?: number) {
+/*     function handleAddProgress(e?: number) {
         if (progress == 90) {
             setProgress((prev) => prev + 10)
         }
@@ -143,7 +232,7 @@ export default function Endereco() {
         } else if (progress !== 0) {
             setProgress((prev) => prev - 15)
         }
-    }
+    } */
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -173,11 +262,11 @@ export default function Endereco() {
                         form.setValue("cidade", data.localidade)
                         form.setValue("bairro", data.bairro)
                         form.setValue("rua", data.logradouro)
-                        handleAddProgress(30)
+                        handleAddProgress(70)
                     }
                 })
         } else if (e.target.value == "") {
-            handleDecreaseProgress()
+            handleDecreaseProgress(10)
         }
 
         setLoader(false)
@@ -199,7 +288,7 @@ export default function Endereco() {
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="w-1/3"
                     >
-                        <Progress value={progress} className="mb-4"/>
+                        <Progress value={progress} className="mb-4" />
 
                         <FormField
                             control={form.control}
@@ -215,7 +304,10 @@ export default function Endereco() {
                                             {...field}
                                             isMask
                                             mask="99999-999"
-                                            onBlur={handleCheckCep}
+                                            onBlur={(e) => {
+                                                handleCheckCep(e)
+                                                handleSetFieldChange(field.name, e.target.value)
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -236,6 +328,7 @@ export default function Endereco() {
                                                 onValueChange={(e) => {
                                                     handleSetEstado(e)
                                                     field.onChange(e)
+                                                    handleSetFieldChange(field.name, e)
                                                 }}
                                                 defaultValue={field.value}
                                                 value={String(estado)}
@@ -278,6 +371,7 @@ export default function Endereco() {
                                                 onValueChange={(e) => {
                                                     handleSetCidade(e)
                                                     field.onChange(e)
+                                                    handleSetFieldChange(field.name, e)
                                                 }}
                                                 value={String(cidade)}
                                                 defaultValue={field.value}
@@ -325,7 +419,7 @@ export default function Endereco() {
                                                     disabled={!cidade}
                                                     placeholder="Digite o bairro do seu endereço."
                                                     {...field}
-                                                    onBlur={handleSetBairro}
+                                                    onBlur={(e) => handleSetFieldChange(field.name, e.target.value)}
                                                 />
                                             </FormControl>
 
@@ -345,7 +439,7 @@ export default function Endereco() {
                                                     key={field.name}
                                                     placeholder="Digite a rua do seu endereço."
                                                     {...field}
-                                                    onBlur={handleSetRua}
+                                                    onBlur={(e) => handleSetFieldChange(field.name, e.target.value)}
                                                 />
                                             </FormControl>
 
@@ -367,7 +461,7 @@ export default function Endereco() {
                                                     key={field.name}
                                                     placeholder="Complemento"
                                                     {...field}
-                                                    onBlur={handleSetComplemento}
+                                                    onBlur={(e) => handleSetFieldChange(field.name, e.target.value)}
                                                 />
                                             </FormControl>
 
@@ -387,7 +481,7 @@ export default function Endereco() {
                                                     key={field.name}
                                                     placeholder="Numero"
                                                     {...field}
-                                                    onBlur={handleSetNumero}
+                                                    onBlur={(e) => handleSetFieldChange(field.name, e.target.value)}
                                                 />
                                             </FormControl>
 

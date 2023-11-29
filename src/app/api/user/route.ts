@@ -35,8 +35,6 @@ export async function POST(request: Request) {
         }
     })
 
-    console.log(userCreated)
-
     if (userCreated) {
         return new Response(JSON.stringify({
             message: "Usuário cadastrado com sucesso."
