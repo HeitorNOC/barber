@@ -14,8 +14,7 @@ import {
 import { Input } from "../../components/ui/input"
 import { Button } from "../../components/ui/button"
 import { Progress } from "../../components/ui/progress"
-import { useRef, useState } from "react"
-
+import { useState } from "react"
 
 const formSchema = z.object({
   name: z
@@ -41,6 +40,7 @@ export default function SignUp() {
   const [emailChanged, setEmailChanged] = useState(false)
   const [passwordChanged, setPasswordChanged] = useState(false)
   const [phoneChanged, setPhoneChanged] = useState(false)
+  const [confirmPasswordChanged, setConfirmPassowrdChanged] = useState(false)
 
   function handleBlur(fieldName: string, currentValue: string) {
     switch (fieldName) {
@@ -80,152 +80,179 @@ export default function SignUp() {
           handleDecreaseProgress();
         }
         break;
+      case "confirmPassword":
+        if (!confirmPasswordChanged && currentValue.trim() !== '') {
+          setConfirmPassowrdChanged(true);
+          handleAddProgress();
+        } else if (confirmPasswordChanged && currentValue.trim() === '') {
+          setConfirmPassowrdChanged(false);
+          handleDecreaseProgress()
+        }
+  
+        if (currentValue !== form.getValues('password')) {
+          form.setError('password', {
+            type: 'manual',
+            message: 'As senhas não coincidem.'
+          });
+        } else {
+          form.clearErrors('password');
+        }
+        break;
       default:
         break;
     }
   }
+  
 
 
-async function onSubmit(values: z.infer<typeof formSchema>) {
-  await fetch("http://localhost:3000/api/user", {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...values
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await fetch("http://localhost:3000/api/user", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values
+      })
     })
+  }
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+    },
   })
-}
 
-const form = useForm<z.infer<typeof formSchema>>({
-  resolver: zodResolver(formSchema),
-  defaultValues: {
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-  },
-})
-
-function handleAddProgress() {
-  if (progress < 100) {
-    setProgress((prev) => prev + 25)
+  function handleAddProgress() {
+    if (progress < 100) {
+      setProgress((prev) => prev + 20)
+    }
   }
-}
 
-function handleDecreaseProgress() {
-  if (progress !== 0) {
-    setProgress((prev) => prev - 25)
+  function handleDecreaseProgress() {
+    if (progress !== 0) {
+      setProgress((prev) => prev - 20)
+    }
   }
-}
 
-return (
-  <div className="min-h-screen flex flex-col items-center justify-center gap-6">
-    <h1 className="text-2xl">Crie sua conta</h1>
+  return (
+    <div className="min-h-screen flex flex-col min-w-full justify-center">
+      <div className="flex flex-col place-self-center">
+        <h1 className="text-2xl">Crie sua conta</h1>
+      </div>
 
-    <div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-[500px]"
-        >
-          <div>
-            <Progress value={progress} />
-            <FormField
-              control={form.control}
-              key="name"
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome</FormLabel>
-                  <FormControl>
-                    <Input
-                      key={field.name}
-                      placeholder="Digite seu nome."
-                      {...field}
-                      onBlur={(e) => handleBlur(field.name, e.target.value)}
+      <div className="mt-4 flex justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-1/3"
+          >
+              <Progress value={progress} />
+            <div className="flex flex-col gap-4 my-4">
+              <FormField
+                control={form.control}
+                key="name"
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome</FormLabel>
+                    <FormControl>
+                      <Input
+                        key={field.name}
+                        placeholder="Digite seu nome."
+                        {...field}
+                        onBlur={(e) => handleBlur(field.name, e.target.value)}
 
-                    />
-                  </FormControl>
+                      />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              key="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número de celular</FormLabel>
-                  <FormControl>
-                    <Input
-                      key={field.name}
-                      placeholder="Digite seu celular."
-                      {...field}
-                      isMask
-                      mask="(99)99999-9999"
-                      onBlur={(e) => handleBlur(field.name, e.target.value)}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                key="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de celular</FormLabel>
+                    <FormControl>
+                      <Input
+                        key={field.name}
+                        placeholder="Digite seu celular."
+                        {...field}
+                        isMask
+                        mask="(99)99999-9999"
+                        onBlur={(e) => handleBlur(field.name, e.target.value)}
 
-                    />
-                  </FormControl>
+                      />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              key="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      key={field.name}
-                      placeholder="Digite seu email."
-                      {...field}
-                      onBlur={(e) => handleBlur(field.name, e.target.value)}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                key="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        key={field.name}
+                        placeholder="Digite seu email."
+                        {...field}
+                        onBlur={(e) => handleBlur(field.name, e.target.value)}
 
-                    />
-                  </FormControl>
+                      />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              key="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Senha</FormLabel>
-                  <FormControl>
-                    <Input
-                      key={field.name}
-                      placeholder="senha"
-                      {...field}
-                      type="password"
-                      onBlur={(e) => handleBlur(field.name, e.target.value)}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                key="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl>
+                      <Input
+                        key={field.name}
+                        placeholder="Digite sua senha."
+                        {...field}
+                        type="password"
+                        onBlur={(e) => handleBlur(field.name, e.target.value)}
 
-                    />
-                  </FormControl>
+                      />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button type="submit">
-            Cadastrar
-          </Button>
-        </form>
-      </Form>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Input 
+                key="ConfirmPassword"
+                placeholder="Confirme sua senha."
+                type="password"
+                onBlur={(e) => handleBlur("confirmPassword", e.target.value)}
+              />
+            </div>
+            <Button type="submit">
+              Cadastrar
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
-  </div>
-)
+  )
 }

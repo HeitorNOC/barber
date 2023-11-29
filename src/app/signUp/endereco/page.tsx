@@ -162,77 +162,16 @@ export default function Endereco() {
         if (e) {
             const actualState = estados.find((state: any) => state.sigla == e)
             listCidades(actualState.id)
-            if (!estado) {
-              //  handleAddProgress()
-            }
             setEstado(e)
-        } else {
-         //   handleDecreaseProgress()
         }
     }
 
     function handleSetCidade(e: any) {
         if (e) {
-            if (!cidade) {
-             //   handleAddProgress()
-            }
             setCidade(e)
-        } else {
-          //  handleDecreaseProgress()
         }
     }
 
-    function handleSetBairro(e: any) {
-        if (e.target.value == "") {
-          //  handleDecreaseProgress()
-        } else {
-            //handleAddProgress()
-        }
-    }
-
-    function handleSetRua(e: any) {
-        if (e.target.value == "") {
-         //   handleDecreaseProgress()
-        } else {
-         //   handleAddProgress()
-        }
-    }
-
-    function handleSetComplemento(e: any) {
-        if (e.target.value == "") {
-           // handleDecreaseProgress()
-        } else {
-          //  handleAddProgress()
-        }
-    }
-
-    function handleSetNumero(e: any) {
-        if (e.target.value == "") {
-           // handleDecreaseProgress()
-        } else {
-           // handleAddProgress()
-        }
-    }
-
-/*     function handleAddProgress(e?: number) {
-        if (progress == 90) {
-            setProgress((prev) => prev + 10)
-        }
-        else if (progress < 100) {
-            if (e) {
-                setProgress((prev) => prev + e)
-            }
-            setProgress((prev) => prev + 15)
-        }
-    }
-
-    function handleDecreaseProgress() {
-        if (progress == 100) {
-            setProgress((prev) => prev - 10)
-        } else if (progress !== 0) {
-            setProgress((prev) => prev - 15)
-        }
-    } */
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
