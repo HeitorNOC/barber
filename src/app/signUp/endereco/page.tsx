@@ -46,95 +46,117 @@ export default function Endereco() {
     const [cidade, setCidade] = useState<String | undefined>()
     const [estados, setEstados] = useState<any>()
     const [cidades, setCidades] = useState<any>()
-    const [cepChanged, setCepChanged] = useState(false);
-    const [ufChanged, setUfChanged] = useState(false);
-    const [cidadeChanged, setCidadeChanged] = useState(false);
-    const [bairroChanged, setBairroChanged] = useState(false);
-    const [ruaChanged, setRuaChanged] = useState(false);
-    const [complementoChanged, setComplementoChanged] = useState(false);
-    const [numeroChanged, setNumeroChanged] = useState(false);
+    const [cepChanged, setCepChanged] = useState('');
+    const [ufChanged, setUfChanged] = useState('');
+    const [cidadeChanged, setCidadeChanged] = useState('');
+    const [bairroChanged, setBairroChanged] = useState('');
+    const [ruaChanged, setRuaChanged] = useState('');
+    const [complementoChanged, setComplementoChanged] = useState('');
+    const [numeroChanged, setNumeroChanged] = useState('');
 
     function handleAddProgress(amount: number) {
         if (progress < 100) {
-          setProgress((prev) => Math.min(prev + amount, 100));
+            setProgress((prev) => Math.min(prev + amount, 100));
         }
-      }
-    
-      function handleDecreaseProgress(amount: number) {
+    }
+
+    function handleDecreaseProgress(amount: number) {
         if (progress > 0) {
-          setProgress((prev) => Math.max(prev - amount, 0));
+            setProgress((prev) => Math.max(prev - amount, 0));
         }
-      }
-    
-      function handleSetFieldChange(field: string, value: string) {
+    }
+
+    function handleSetFieldChange(field: string, value: string) {
         switch (field) {
-          case "cep":
-            if (!cepChanged && value.trim() !== '') {
-              setCepChanged(true);
-              handleAddProgress(10);
-            } else if (cepChanged && value.trim() === '') {
-              setCepChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "uf":
-            if (!ufChanged && value.trim() !== '') {
-              setUfChanged(true);
-              handleAddProgress(10);
-            } else if (ufChanged && value.trim() === '') {
-              setUfChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "cidade":
-            if (!cidadeChanged && value.trim() !== '') {
-              setCidadeChanged(true);
-              handleAddProgress(10);
-            } else if (cidadeChanged && value.trim() === '') {
-              setCidadeChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "bairro":
-            if (!bairroChanged && value.trim() !== '') {
-              setBairroChanged(true);
-              handleAddProgress(10);
-            } else if (bairroChanged && value.trim() === '') {
-              setBairroChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "rua":
-            if (!ruaChanged && value.trim() !== '') {
-              setRuaChanged(true);
-              handleAddProgress(10);
-            } else if (ruaChanged && value.trim() === '') {
-              setRuaChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "complemento":
-            if (!complementoChanged && value.trim() !== '') {
-              setComplementoChanged(true);
-              handleAddProgress(10);
-            } else if (complementoChanged && value.trim() === '') {
-              setComplementoChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          case "numero":
-            if (!numeroChanged && value.trim() !== '') {
-              setNumeroChanged(true);
-              handleAddProgress(10);
-            } else if (numeroChanged && value.trim() === '') {
-              setNumeroChanged(false);
-              handleDecreaseProgress(10);
-            }
-            break;
-          default:
-            break;
+            case "cep":
+                if (value == cepChanged && value.trim().length > 1 || cepChanged.length > 1 && value.length > 1) {
+                    setCepChanged(value)
+                    break
+                }
+                else if (value != cepChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.trim() == '') {
+                    handleDecreaseProgress(10)
+                }
+                setCepChanged(value)
+                break;
+            case "uf":
+                if (value == ufChanged && value.trim().length > 1 || ufChanged.length > 1 && value.length > 1) {
+                    setUfChanged(value)
+                    break
+                }
+                else if (value != ufChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.trim() == '') {
+                    handleDecreaseProgress(10);
+                }
+                setUfChanged(value)
+                break;
+            case "cidade":
+                if (value == cidadeChanged && value.trim().length > 1 || cidadeChanged.length > 1 && value.length > 1) {
+                    setCidadeChanged(value)
+                    break
+                }
+                else if (value !== cidadeChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                }
+                else if (value.trim() == '') {
+                    handleDecreaseProgress(10);
+                }
+                setCidadeChanged(value)
+                break;
+            case "bairro":
+                if (value == bairroChanged && value.trim().length > 1 || bairroChanged.length > 1 && value.length > 1) {      
+                    setBairroChanged(value)              
+                    break
+                }
+                else if (value != bairroChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.trim() == '' || !value) {
+                    handleDecreaseProgress(10);
+                }
+                setBairroChanged(value)
+                break;
+            case "rua":
+                if (value == ruaChanged && value.trim().length > 1 || ruaChanged.length > 1 && value.length > 1) {
+                    setRuaChanged(value)
+                    break
+                }
+                else if (value != ruaChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.trim() === '') {
+                    handleDecreaseProgress(10);
+                }
+                setRuaChanged(value)
+                break;
+            case "complemento":
+                if (value == complementoChanged && value.trim().length > 1 || complementoChanged.length > 1 && value.length > 1) {
+                    setComplementoChanged(value)
+                    break
+                }
+                else if (value != complementoChanged && value.trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.trim() === '') {
+                    handleDecreaseProgress(10);
+                }
+                setComplementoChanged(value)
+                break;
+            case "numero":
+                if (value.toString() == numeroChanged && value.toString().trim().length > 1 || numeroChanged.length > 1 && value.length > 1) {
+                    setNumeroChanged(value.toString())
+                    break
+                }
+                else if (value.toString() != numeroChanged && value.toString().trim() !== '') {
+                    handleAddProgress(10);
+                } else if (value.toString().trim() === '') {
+                    handleDecreaseProgress(10);
+                }
+                setNumeroChanged(value.toString())
+                break;
+            default:
+                break;
         }
-      }
+    }
 
     const listStates = async () => {
         const response = await axios.get("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
@@ -197,15 +219,18 @@ export default function Endereco() {
                     } else {
                         handleSetEstado(data.uf)
                         handleSetCidade(data.localidade)
-                        form.setValue("uf", data.uf)
-                        form.setValue("cidade", data.localidade)
-                        form.setValue("bairro", data.bairro)
                         form.setValue("rua", data.logradouro)
+                        form.setValue("bairro", data.bairro)
+                        form.setValue("cidade", data.localidade)
+                        form.setValue("uf", data.uf)
+                        setUfChanged(data.uf)
+                        setCepChanged(e.target.value)
+                        setCidadeChanged(data.localidade)
+                        setRuaChanged(data.logradouro)
+                        setBairroChanged(data.bairro)
                         handleAddProgress(70)
                     }
                 })
-        } else if (e.target.value == "") {
-            handleDecreaseProgress(10)
         }
 
         setLoader(false)
@@ -378,10 +403,11 @@ export default function Endereco() {
                                                     key={field.name}
                                                     placeholder="Digite a rua do seu endereço."
                                                     {...field}
-                                                    onBlur={(e) => handleSetFieldChange(field.name, e.target.value)}
+                                                    onBlur={(e) => {
+                                                        handleSetFieldChange(field.name, e.target.value)
+                                                    }}
                                                 />
                                             </FormControl>
-
                                             <FormMessage />
                                         </FormItem>
                                     )}
