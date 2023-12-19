@@ -15,6 +15,7 @@ import { Input } from "../../components/ui/input"
 import { Button } from "../../components/ui/button"
 import { Progress } from "../../components/ui/progress"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   name: z
@@ -41,6 +42,8 @@ export default function SignUp() {
   const [passwordChanged, setPasswordChanged] = useState(false)
   const [phoneChanged, setPhoneChanged] = useState(false)
   const [confirmPasswordChanged, setConfirmPassowrdChanged] = useState(false)
+
+  const router = useRouter()
 
   function handleBlur(fieldName: string, currentValue: string) {
     switch (fieldName) {
@@ -103,10 +106,8 @@ export default function SignUp() {
     }
   }
   
-
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch("http://localhost:3000/api/user", {
+    const res = await fetch("http://localhost:3000/api/user", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -115,6 +116,10 @@ export default function SignUp() {
         ...values
       })
     })
+    if (res.ok) {
+      const json = await res.json()
+      router.push(`/signUp/endereco/${json.id}`)
+    }
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -142,7 +147,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex flex-col min-w-full justify-center">
       <div className="flex flex-col place-self-center">
-        <h1 className="text-2xl">Crie sua conta</h1>
+        <h1 className="text-2xl">Cadastro</h1>
       </div>
 
       <div className="mt-4 flex justify-center">

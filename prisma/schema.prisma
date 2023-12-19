@@ -18,6 +18,7 @@ model User {
   uf             String?
   phone          String?
   cpf            String?
+  address        Address?
   purchases      Purchase[]
   schedules      Schedule[]
   accounts       Account[]
@@ -26,12 +27,26 @@ model User {
   @@map("users")
 }
 
+model Address {
+  id          String  @id @default(uuid())
+  userId      String  @unique
+  cep         String
+  uf          String
+  cidade      String
+  bairro      String
+  rua         String
+  complemento String?
+  numero      Int
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Schedule {
   id         String   @id @default(uuid())
   userId     String
   created_at DateTime @default(now())
   intialTime String
   endTime    String
+  date       String
   isCanceled Boolean
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

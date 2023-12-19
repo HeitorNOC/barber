@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useRouter, useParams } from "next/navigation"
 
 const formSchema = z.object({
     cep: z.string().refine((cep) => /^\d{5}-\d{3}$/.test(cep), {
@@ -53,6 +54,15 @@ export default function Endereco() {
     const [ruaChanged, setRuaChanged] = useState('');
     const [complementoChanged, setComplementoChanged] = useState('');
     const [numeroChanged, setNumeroChanged] = useState('');
+    const params = useParams()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (!params.id) {
+            router.push('/')
+        }
+    }, [params.id])
+
 
     function handleAddProgress(amount: number) {
         if (progress < 100) {
@@ -106,8 +116,8 @@ export default function Endereco() {
                 setCidadeChanged(value)
                 break;
             case "bairro":
-                if (value == bairroChanged && value.trim().length > 1 || bairroChanged.length > 1 && value.length > 1) {      
-                    setBairroChanged(value)              
+                if (value == bairroChanged && value.trim().length > 1 || bairroChanged.length > 1 && value.length > 1) {
+                    setBairroChanged(value)
                     break
                 }
                 else if (value != bairroChanged && value.trim() !== '') {
@@ -176,8 +186,20 @@ export default function Endereco() {
         isError
     } = useQuery({ queryKey: ["states"], queryFn: listStates })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        const res = await fetch(`http://localhost:3000/api/user/${params.id}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...values
+            })
+        })
+
+        if (res.ok) {
+            router.push('/')
+        }
     }
 
     function handleSetEstado(e: any) {
